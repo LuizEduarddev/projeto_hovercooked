@@ -4,6 +4,7 @@
 #include <string.h>
 #include <time.h>
 #include <unistd.h>
+#include <ncurses.h>
 #define NOME_PRATO 100
 
 typedef struct no
@@ -110,18 +111,6 @@ void adicionar_item(struct gancho *cabeca, char *prato, int tempo_fazer)
     }
 }
 
-void gera_pedido(struct gancho *cabeca)
-{
-
-    pthread_t thread_gera_pedido;
-    int cont = 0;
-    while (cont != 10)
-    {
-        pthread_create(&thread_gera_pedido, NULL, thread_adicionar_prato, (void *)cabeca);
-        cont++; 
-    }
-}
-
 void *thread_adicionar_prato(void* args)
 {
     struct gancho *cabeca = (struct cabeca *)args;
@@ -130,26 +119,65 @@ void *thread_adicionar_prato(void* args)
     return NULL;
 }
 
+void gera_pedido(struct gancho *cabeca)
+{
+
+    pthread_t thread_gera_pedido;
+    int cont = 0;
+    while (cont <= 10)
+    {
+        pthread_create(&thread_gera_pedido, NULL, thread_adicionar_prato, (void *)cabeca);
+        cont++; 
+    }
+}
+
 void printarLista(struct gancho *cabeca) {
     struct no *atual = cabeca->primeiro;
     while (atual != NULL)
     {
-        printf("pedido '%s' com tempo de espera de '%d' segundos", atual->prato, atual->tempo_fazer);
+        printf("pedido '%s' com tempo de espera de '%d' segundos\n", atual->prato, atual->tempo_fazer);
+        atual = atual->proximo;
     }
     return;
+}
+
+void *thread_escolha_usuario(void* cabeca)
+{
+    int tecla;
+    keypad(stdscr, TRUE);
+    while (tecla != 'q' && tecla != KEY_F(4))
+    {
+        tecla = getch();
+        switch (tecla)
+        {
+        case '1':
+            printarLista(cabeca);
+            break;
+        case '2':
+            
+            break;
+        default:
+            break;
+        }
+    }
+}
+
+void pega_escolha(struct gancho *cabeca)
+{
+    pthread_t esccolha_usuario;
+    pthread_create(&esccolha_usuario, NULL, thread_escolha_usuario, (void* )cabeca);
 }
 
 int main() {
     struct no* cabeca = criar_lista();
     int vitoria = 0;
+    int vida = 5;
+    pthread_t bancadas[2];
     gera_pedido(cabeca);
-    
-    while (vitoria == 0)
+
+    while (vida > 0)
     {
-        // pthread_t pega_escolha_usuario;
-        // pthread_create(&pega_escolha_usuario, NULL, thread_escolha, NULL);
-        sleep(5);
-        printarLista(cabeca);
+        pega_escolha(cabeca);
     }
 
     return 0;
