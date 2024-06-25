@@ -7,6 +7,8 @@
 #include <ncurses.h>
 #define NOME_PRATO 100
 
+pthread_t bancadas[2];
+
 typedef struct no
 {
     int tempo_fazer;
@@ -109,6 +111,8 @@ void adicionar_item(struct gancho *cabeca, char *prato, int tempo_fazer)
             insere_final(cabeca, novo);
         }
     }
+    printf("Pedido '%s' com tempo de espera de '%d' segundos acaba de chegar.", prato, tempo_fazer);
+    return;
 }
 
 void *thread_adicionar_prato(void* args)
@@ -131,14 +135,53 @@ void gera_pedido(struct gancho *cabeca)
     }
 }
 
-void printarLista(struct gancho *cabeca) {
-    struct no *atual = cabeca->primeiro;
-    while (atual != NULL)
+void ver_bancadas(void)
+{
+    int cont = 0;
+    for (int i=0; i < 2; i++)
     {
-        printf("pedido '%s' com tempo de espera de '%d' segundos\n", atual->prato, atual->tempo_fazer);
-        atual = atual->proximo;
+        if (bancadas[i] == NULL)
+        {
+            cont++;
+        }
+        else{
+            printf("Bancada '%d' disponivel.", i + 1);
+        }
+    }
+    if (cont == 2)
+    {
+        printf("Todas as bancadas estão em uso no momento. Assim que uma for liberada, você será avisado.");
     }
     return;
+}
+
+void inserir_bancada(int num)
+{
+    if (bancadas[num] == NULL)
+    {
+        
+    }
+}
+
+void selecionar_bancada()
+{
+    int tecla;
+    keypad(stdscr, TRUE);
+    while (tecla != 'q' && tecla != KEY_F(4))
+    {
+        tecla = getch();
+        switch (tecla)
+        {
+        case '1':
+            inserir_bancada(0);
+            break;
+        case '2':
+            inserir_bancada(1);
+            break;
+        default:
+            break;
+        }
+    }
 }
 
 void *thread_escolha_usuario(void* cabeca)
@@ -151,10 +194,10 @@ void *thread_escolha_usuario(void* cabeca)
         switch (tecla)
         {
         case '1':
-            printarLista(cabeca);
+            ver_bancadas();
             break;
         case '2':
-            
+            selecionar_bancada();
             break;
         default:
             break;
@@ -172,7 +215,6 @@ int main() {
     struct no* cabeca = criar_lista();
     int vitoria = 0;
     int vida = 5;
-    pthread_t bancadas[2];
     gera_pedido(cabeca);
 
     while (vida > 0)
