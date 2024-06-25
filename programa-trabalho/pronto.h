@@ -17,7 +17,7 @@ typedef struct gancho_pronto
 };
 
 struct gancho_pronto* criar_lista_pronto(void);
-void insere_final(struct gancho *cabeca, struct no_pronto *novo);
-void adicionar_item_preparo(struct gancho_pedidos *cabeca, char *prato, int tempo_fazer);
-
+void insere_final_pronto(struct gancho_pronto *cabeca, struct no_pronto *novo);
+void adicionar_item_pronto(struct gancho_pronto *cabeca, char *prato, int tempo_fazer);
+void deletar_item_pronto(struct no_pronto *no, struct gancho_pronto *cabeca);
 #endif

@@ -14,7 +14,7 @@ struct gancho_pronto* criar_lista_pronto(void)
     return cabeca;
 }
 
-void insere_final(struct gancho_pronto *cabeca, struct no_pronto *novo)
+void insere_final_pronto(struct gancho_pronto *cabeca, struct no_pronto *novo)
 {
     struct no_pronto* aux = cabeca->primeiro;
     struct no_pronto* atual = novo;
@@ -29,7 +29,7 @@ void insere_final(struct gancho_pronto *cabeca, struct no_pronto *novo)
     return;
 }
 
-void adicionar_item_preparo(struct gancho_pronto *cabeca, char *prato, int tempo_fazer)
+void adicionar_item_pronto(struct gancho_pronto *cabeca, char *prato, int tempo_fazer)
 {
     struct no_pronto* novo = (struct no_pronto *)(malloc(sizeof(struct no_pronto)));
     novo->tempo_fazer = tempo_fazer;
@@ -48,9 +48,40 @@ void adicionar_item_preparo(struct gancho_pronto *cabeca, char *prato, int tempo
         }
         else{
             novo->proximo = NULL;
-            insere_final(cabeca, novo);
+            insere_final_pronto(cabeca, novo);
         }
     }
     printf("Pedido '%s' com tempo de espera de '%d' segundos acaba de chegar.", prato, tempo_fazer);
+    return;
+}
+
+void deletar_item_pronto(struct no_pronto *no, struct gancho_pronto *cabeca)
+{
+    struct no_pronto *aux = cabeca->primeiro;
+
+    if (aux == no)
+    {
+        if (aux->proximo != NULL)
+        {
+            cabeca->primeiro = aux->proximo;
+            aux->proximo->anterior = cabeca->primeiro;
+            free(no);
+        }else{
+            free(no);
+        }
+    }
+    else if (no->proximo == NULL)
+    {
+        free(no);
+    }
+    else{
+        while (aux->proximo != no)
+        {
+            aux = aux->proximo;
+        }
+        aux->proximo = no->proximo;
+        no->proximo->anterior = aux;
+        free(no);
+    }
     return;
 }

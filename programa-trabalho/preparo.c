@@ -14,7 +14,7 @@ struct gancho_preparo* criar_lista_preparo(void)
     return cabeca;
 }
 
-void insere_final(struct gancho_preparo *cabeca, struct no_preparo *novo)
+void insere_final_preparo(struct gancho_preparo *cabeca, struct no_preparo *novo)
 {
     struct no_preparo* aux = cabeca->primeiro;
     struct no_preparo* atual = novo;
@@ -49,9 +49,40 @@ void adicionar_item_preparo(struct gancho_preparo *cabeca, char *prato, int temp
         }
         else{
             novo->proximo = NULL;
-            insere_final(cabeca, novo);
+            insere_final_preparo(cabeca, novo);
         }
     }
     printf("Pedido '%s' com tempo de espera de '%d' segundos acaba de chegar.", prato, tempo_fazer);
+    return;
+}
+
+void deletar_item_preparo(struct no_preparo *no, struct gancho_preparo *cabeca)
+{
+    struct no_preparo *aux = cabeca->primeiro;
+
+    if (aux == no)
+    {
+        if (aux->proximo != NULL)
+        {
+            cabeca->primeiro = aux->proximo;
+            aux->proximo->anterior = cabeca->primeiro;
+            free(no);
+        }else{
+            free(no);
+        }
+    }
+    else if (no->proximo == NULL)
+    {
+        free(no);
+    }
+    else{
+        while (aux->proximo != no)
+        {
+            aux = aux->proximo;
+        }
+        aux->proximo = no->proximo;
+        no->proximo->anterior = aux;
+        free(no);
+    }
     return;
 }

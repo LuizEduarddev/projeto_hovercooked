@@ -16,7 +16,7 @@ typedef struct gancho_preparo
 };
 
 struct gancho_preparo* criar_lista_preparo(void);
-void insere_final(struct gancho_preparo *cabeca, struct no_preparo *novo);
+void insere_final_preparo(struct gancho_preparo *cabeca, struct no_preparo *novo);
 void adicionar_item_preparo(struct gancho_preparo *cabeca, char *prato, int tempo_fazer);
-
+void deletar_item_preparo(struct no_preparo *no, struct gancho_preparo *cabeca);
 #endif
