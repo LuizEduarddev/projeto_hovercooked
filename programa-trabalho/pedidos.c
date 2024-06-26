@@ -14,48 +14,54 @@ struct gancho_pedidos* criar_lista_pedidos(void)
     return cabeca;
 }
 
-void adicionar_item_pedido(struct gancho_pedidos *cabeca, char *prato, int tempo_fazer)
-{
-    struct pedidos* novo = (struct pedidos *)(malloc(sizeof(struct pedidos)));
+void insere_final_pedidos(struct gancho_pedidos *cabeca, struct pedidos *novo) {
+    struct pedidos* aux = cabeca->primeiro;
+
+    while (aux->proximo != NULL) {
+        aux = aux->proximo;
+    }
+
+    aux->proximo = novo;
+    novo->anterior = aux;
+    novo->proximo = NULL; 
+}
+
+void adicionar_item_pedido(struct gancho_pedidos *cabeca, char *prato, int tempo_fazer) {
+    struct pedidos* novo = (struct pedidos *)malloc(sizeof(struct pedidos));
+    if (novo == NULL) {
+        fprintf(stderr, "Failed to allocate memory for new pedido\n");
+        return;
+    }
     novo->tempo_fazer = tempo_fazer;
     strcpy(novo->prato, prato);
-    if (cabeca->primeiro == NULL)
-    {
+    novo->anterior = NULL;
+    novo->proximo = NULL;
+
+    if (cabeca->primeiro == NULL) {
         cabeca->primeiro = novo;
-        novo->anterior = NULL;
-        novo->proximo = NULL;
+    } else {
+        insere_final_pedidos(cabeca, novo);
     }
-    else{
-        if (cabeca->primeiro->proximo == NULL)
-        {
-            cabeca->primeiro->proximo = novo;
-            novo->anterior =  cabeca->primeiro->proximo;
-        }
-        else{
-            novo->proximo = NULL;
-            insere_final(cabeca, novo);
-        }
-    }
-    printf("Pedido '%s' com tempo de espera de '%d' segundos acaba de chegar.", prato, tempo_fazer);
-    return;
+    printw("Pedido '%s' com tempo de espera de '%d' segundos acaba de chegar.\n", prato, tempo_fazer);
 }
 
-void gera_pedido(struct gancho_pedidos *cabeca_pedidos)
+void *gera_pedidos(void* cabeca_pedidos)
 {
-    pthread_t thread_gera_pedido;
-    while (1)
+    int cont = 0;
+    while (cont <= 10)
     {
-        pthread_create(&thread_gera_pedido, NULL, thread_adicionar_prato, (void *)cabeca_pedidos);
-        sleep(5);
+        thread_adicionar_prato(cabeca_pedidos);
+        //sleep(5);
+        cont++;
     }
 }
 
-void *thread_adicionar_prato(void* args)
+void thread_adicionar_prato(void* args)
 {
-    struct gancho_pedidos *cabeca = (struct cabeca *)args;
+    struct gancho_pedidos *cabeca = (struct gancho_pedidos *)args;
     int number = rand() % 10;
     insert_prato(number, cabeca);
-    return NULL;
+    return;
 }
 
 void ver_pedidos(struct gancho_pedidos *cabeca)
@@ -71,6 +77,7 @@ void ver_pedidos(struct gancho_pedidos *cabeca)
     else{
         printw("Ocorreu um erro inesperado. Reinicie o programa e tente novamente.");
     }
+    refresh();
 }
 
 void insert_prato(int number, struct gancho_pedidos *head)
@@ -115,6 +122,7 @@ void insert_prato(int number, struct gancho_pedidos *head)
     {
         adicionar_item_pedido(head, "pamonha e cafe com leite",5);
     }
+    return;
 }
 
 void deletar_item_pedido(struct pedidos *no, struct gancho_pedidos *cabeca)

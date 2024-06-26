@@ -27,7 +27,6 @@ void insere_final_preparo(struct gancho_preparo *cabeca, struct no_preparo *novo
     aux->proximo = novo;
     novo->anterior = aux;
     return;
-
 }
 
 void adicionar_item_preparo(struct gancho_preparo *cabeca, char *prato, int tempo_fazer)

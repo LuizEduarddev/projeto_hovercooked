@@ -9,12 +9,12 @@ typedef struct no_pronto
     char prato[NOME_PRATO];
     struct no_pronto* proximo;
     struct no_pronto* anterior;
-};
+}no_pronto;
 
 typedef struct gancho_pronto
 {
     struct no_pronto *primeiro;
-};
+}gancho_pronto;
 
 struct gancho_pronto* criar_lista_pronto(void);
 void insere_final_pronto(struct gancho_pronto *cabeca, struct no_pronto *novo);

@@ -8,12 +8,12 @@ typedef struct no_preparo
     char prato[NOME_PRATO];
     struct no_preparo* proximo;
     struct no_preparo* anterior;
-};
+}no_preparo;
 
 typedef struct gancho_preparo
 {
     struct no_preparo *primeiro;
-};
+}gancho_preparo;
 
 struct gancho_preparo* criar_lista_preparo(void);
 void insere_final_preparo(struct gancho_preparo *cabeca, struct no_preparo *novo);
