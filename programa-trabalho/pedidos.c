@@ -6,73 +6,44 @@
 #include <unistd.h>
 #include <ncurses.h>
 #include "pedidos.h"
+#include "lista_encadeada_struct.h"
 
-struct gancho_pedidos* criar_lista_pedidos(void)
+void *gera_pedidos(void* cabeca)
 {
-    struct gancho_pedidos *cabeca = (struct gancho_pedidos *)(malloc(sizeof(struct gancho_pedidos)));
-    cabeca->primeiro = NULL;
-    return cabeca;
-}
-
-void insere_final_pedidos(struct gancho_pedidos *cabeca, struct pedidos *novo) {
-    struct pedidos* aux = cabeca->primeiro;
-
-    while (aux->proximo != NULL) {
-        aux = aux->proximo;
-    }
-
-    aux->proximo = novo;
-    novo->anterior = aux;
-    novo->proximo = NULL; 
-}
-
-void adicionar_item_pedido(struct gancho_pedidos *cabeca, char *prato, int tempo_fazer) {
-    struct pedidos* novo = (struct pedidos *)malloc(sizeof(struct pedidos));
-    if (novo == NULL) {
-        fprintf(stderr, "Failed to allocate memory for new pedido\n");
-        return;
-    }
-    novo->tempo_fazer = tempo_fazer;
-    strcpy(novo->prato, prato);
-    novo->anterior = NULL;
-    novo->proximo = NULL;
-
-    if (cabeca->primeiro == NULL) {
-        cabeca->primeiro = novo;
-    } else {
-        insere_final_pedidos(cabeca, novo);
-    }
-    printf("Pedido '%s' com tempo de espera de '%d' segundos acaba de chegar.\n", prato, tempo_fazer);
-}
-
-void *gera_pedidos(void* cabeca_pedidos)
-{
-    int cont = 0;
-    while (cont <= 10)
+    while (1)
     {
-        thread_adicionar_prato(cabeca_pedidos);
-        //sleep(5);
-        cont++;
+        thread_adicionar_prato(cabeca);
+        sleep(1);
     }
 }
 
 void thread_adicionar_prato(void* args)
 {
-    struct gancho_pedidos *cabeca = (struct gancho_pedidos *)args;
+    struct gancho *cabeca = (struct gancho *)args;
     int number = rand() % 10;
     insert_prato(number, cabeca);
     return;
 }
 
-void ver_pedidos(struct gancho_pedidos *cabeca)
+void printa_tela_pedidos(struct gancho *cabeca)
 {
     if (cabeca != NULL)
     {
-        struct pedidos *aux = cabeca->primeiro;
+        int cont = 2;
+        struct No *aux = cabeca->primeiro;
+        move(0,80);
+        printw("No");
+        move(1,80);
+        printw("------------------------------------");
         while(aux != NULL)
         {
-            printw("'%s'\n", aux->prato);
+            move(cont,80);
+            printw("| id:%d '%s' - '%d' (segs)|\n", aux->numero_pedido,aux->prato, aux->tempo_fazer);
+            aux = aux->proximo;
+            cont++;
         }
+        move(cont + 1, 80);
+        printw("------------------------------------");
     }
     else{
         printw("Ocorreu um erro inesperado. Reinicie o programa e tente novamente.");
@@ -80,78 +51,47 @@ void ver_pedidos(struct gancho_pedidos *cabeca)
     refresh();
 }
 
-void insert_prato(int number, struct gancho_pedidos *head)
+void insert_prato(int number, struct gancho *head)
 {
     if (number == 0)
     {
-        adicionar_item_pedido(head, "pao de queijo com linguica", 5);
+        adicionar_item(head, "pao de queijo com linguica", 5, "pedidos");
     }
     else if (number == 1)
     {
-        adicionar_item_pedido(head, "broa de milho + cafe", 5);
+        adicionar_item(head, "broa de milho + cafe", 5, "pedidos");
     }
     else if (number == 2)
     {
-        adicionar_item_pedido(head, "biscoito frito de polvilho", 5);
+        adicionar_item(head, "biscoito frito de polvilho", 5, "pedidos");
     }
     else if (number == 3)
     {
-        adicionar_item_pedido(head, "torresmo com rabada", 3);
+        adicionar_item(head, "torresmo com rabada", 3, "pedidos");
     }
     else if (number == 4)
     {
-        adicionar_item_pedido(head, "guaranazinho com croquete", 4);
+        adicionar_item(head, "guaranazinho com croquete", 4, "pedidos");
     }
     else if (number == 5)
     {
-        adicionar_item_pedido(head, "bolo de milho com cafe coado", 5);
+        adicionar_item(head, "bolo de milho com cafe coado", 5, "pedidos");
     }
     else if (number == 6)
     {
-        adicionar_item_pedido(head, "cafe coado", 2);
+        adicionar_item(head, "cafe coado", 2, "pedidos");
     }
     else if (number == 7)
     {
-        adicionar_item_pedido(head, "doce de abobora com coco ralado", 6);
+        adicionar_item(head, "doce de abobora com coco ralado", 6, "pedidos");
     }
     else if (number == 8)
     {
-        adicionar_item_pedido(head, "rapadura com goiabada e queijo", 3);
+        adicionar_item(head, "rapadura com goiabada e queijo", 3, "pedidos");
     }
     else if (number == 9)
     {
-        adicionar_item_pedido(head, "pamonha e cafe com leite",5);
-    }
-    return;
-}
-
-void deletar_item_pedido(struct pedidos *no, struct gancho_pedidos *cabeca)
-{
-    struct pedidos *aux = cabeca->primeiro;
-
-    if (aux == no)
-    {
-        if (aux->proximo != NULL)
-        {
-            cabeca->primeiro = aux->proximo;
-            aux->proximo->anterior = cabeca->primeiro;
-            free(no);
-        }else{
-            free(no);
-        }
-    }
-    else if (no->proximo == NULL)
-    {
-        free(no);
-    }
-    else{
-        while (aux->proximo != no)
-        {
-            aux = aux->proximo;
-        }
-        aux->proximo = no->proximo;
-        no->proximo->anterior = aux;
-        free(no);
+        adicionar_item(head, "pamonha e cafe com leite",5, "pedidos");
     }
     return;
 }

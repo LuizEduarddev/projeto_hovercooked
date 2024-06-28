@@ -9,19 +9,20 @@
 #include "preparo.h"
 #include "pedidos.h"
 #include "tela.h"
+#include "lista_encadeada_struct.h"
+#define quantidade_cozinheiro 2
 
 void start()
 {
     pthread_t thread_gera_pedido;
-    struct gancho_pedidos *cabeca_pedidos = criar_lista_pedidos();
-    struct gancho_pronto *cabeca_pronto = criar_lista_pronto();
-    struct gancho_preparo *cabeca_preparo = criar_lista_preparo();
+    struct gancho *cabeca_pedidos = criar_lista_No();
+    struct gancho *cabeca_pronto = criar_lista_No();
+    struct gancho *cabeca_preparo = criar_lista_No();
     pthread_create(&thread_gera_pedido, NULL, gera_pedidos, (void *)cabeca_pedidos);
     gera_tela(cabeca_pedidos, cabeca_preparo, cabeca_pronto);
-    pthread_join(thread_gera_pedido, NULL);
 }
 
-struct tela_struct *create_variable_tela(struct gancho_pedidos *cabeca_pedidos, struct gancho_preparo *cabeca_preparo, struct gancho_pronto *cabeca_pronto)
+struct tela_struct *create_variable_tela(struct gancho *cabeca_pedidos, struct gancho *cabeca_preparo, struct gancho *cabeca_pronto)
 {
     struct tela_struct *tela_data;
 
@@ -37,7 +38,7 @@ struct tela_struct *create_variable_tela(struct gancho_pedidos *cabeca_pedidos, 
     return tela_data;
 }
 
-void gera_tela(struct gancho_pedidos *cabeca_pedidos, struct gancho_preparo *cabeca_preparo, struct gancho_pronto *cabeca_pronto)
+void gera_tela(struct gancho *cabeca_pedidos, struct gancho *cabeca_preparo, struct gancho *cabeca_pronto)
 {
     pthread_t thread_tela;
     struct tela_struct *tela_data = create_variable_tela(cabeca_pedidos, cabeca_preparo, cabeca_pronto);
@@ -49,6 +50,7 @@ void *thread_func_tela(void* tel)
 {
     struct tela_struct *tela_data = (struct tela_struct *)tel;
     int tecla;
+    int cozinheiros_atuais = 0;
     initscr(); // Inicializa a tela (posição atual é (0, 0))
     start_color();
     raw();    // Não precisa esperar uma quebra de linha
@@ -70,12 +72,12 @@ void *thread_func_tela(void* tel)
     attroff(COLOR_PAIR(5));
 
     move(0, 0);
-    printw(" - Digite 1, 2, q ou F4: ");
+    printw(" - Digite 1 - Preparar Item | 2, q ou F4: \n");
     do {
         tecla = getch();
         switch (tecla) {
             case '1':
-                ver_pedidos(tela_data->cabeca_pedido);
+            cozinheiros_atuais = preparar_item(tela_data, quantidade_cozinheiro, cozinheiros_atuais);
                 break;
             /*
             case '2':
@@ -102,7 +104,7 @@ void *thread_func_tela(void* tel)
 
     endwin();
 
-    printf("Termino da execucao\n");
+    printw("Termino da execucao\n");
 
     return 0;
 }
