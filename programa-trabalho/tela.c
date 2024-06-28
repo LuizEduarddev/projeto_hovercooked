@@ -18,6 +18,7 @@ void start()
     struct gancho_preparo *cabeca_preparo = criar_lista_preparo();
     pthread_create(&thread_gera_pedido, NULL, gera_pedidos, (void *)cabeca_pedidos);
     gera_tela(cabeca_pedidos, cabeca_preparo, cabeca_pronto);
+    pthread_join(thread_gera_pedido, NULL);
 }
 
 struct tela_struct *create_variable_tela(struct gancho_pedidos *cabeca_pedidos, struct gancho_preparo *cabeca_preparo, struct gancho_pronto *cabeca_pronto)
@@ -41,6 +42,7 @@ void gera_tela(struct gancho_pedidos *cabeca_pedidos, struct gancho_preparo *cab
     pthread_t thread_tela;
     struct tela_struct *tela_data = create_variable_tela(cabeca_pedidos, cabeca_preparo, cabeca_pronto);
     pthread_create(&thread_tela, NULL, thread_func_tela, (void* )tela_data);
+    pthread_join(thread_tela, NULL);
 }
 
 void *thread_func_tela(void* tel)

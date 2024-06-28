@@ -42,7 +42,7 @@ void adicionar_item_pedido(struct gancho_pedidos *cabeca, char *prato, int tempo
     } else {
         insere_final_pedidos(cabeca, novo);
     }
-    printw("Pedido '%s' com tempo de espera de '%d' segundos acaba de chegar.\n", prato, tempo_fazer);
+    printf("Pedido '%s' com tempo de espera de '%d' segundos acaba de chegar.\n", prato, tempo_fazer);
 }
 
 void *gera_pedidos(void* cabeca_pedidos)
