@@ -10,6 +10,7 @@
 #include "pedidos.h"
 #include "tela.h"
 #include "lista_encadeada_struct.h"
+#include "jogo.h"
 
 void start()
 {
@@ -34,7 +35,7 @@ struct tela_struct *create_variable_tela(struct gancho *cabeca_pedidos, struct g
     tela_data->cabeca_pedido = cabeca_pedidos;
     tela_data->cabeca_preparo = cabeca_preparo;
     tela_data->cabeca_pronto = cabeca_pronto;
-    tela_data->cozinheiros_maximos = 2;
+    tela_data->bancadas_maximas = 2;
     return tela_data;
 }
 
@@ -50,7 +51,6 @@ void *thread_func_tela(void* tel)
 {
     struct tela_struct *tela_data = (struct tela_struct *)tel;
     int tecla;
-    int cozinheiros_atuais = 0;
     initscr(); // Inicializa a tela (posição atual é (0, 0))
     start_color();
     raw();    // Não precisa esperar uma quebra de linha
@@ -63,21 +63,18 @@ void *thread_func_tela(void* tel)
     init_pair(2, COLOR_GREEN, COLOR_BLACK);
     init_pair(5, COLOR_RED, COLOR_BLACK);
 
+    move(0,30);
     printw("Iniciando...");
     refresh(); // Realiza todos os comandos pendentes atualizando na tela
     sleep(1);
 
-    attron(COLOR_PAIR(5));
-    mvprintw(LINES - 1, 0, "(%d - %d) - Pressione 'q' para sair...", LINES, COLS);
-    attroff(COLOR_PAIR(5));
-
-    move(0, 0);
-    printw(" - Digite 1 - Preparar Item | 2, q ou F4: \n");
     do {
+        move(0, 30);
+        printw(" - Digite 1 - Preparar Item | 2, q ou F4: \n");
         tecla = getch();
         switch (tecla) {
             case '1':
-            cozinheiros_atuais = preparar_item(tela_data);
+            preparar_item(tela_data);
                 break;
             /*
             case '2':

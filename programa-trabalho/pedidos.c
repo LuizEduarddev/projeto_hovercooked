@@ -29,20 +29,30 @@ void printa_tela_pedidos(struct gancho *cabeca)
 {
     if (cabeca != NULL)
     {
-        int cont = 2;
+        int cont = 6;
+        int conta_linha = 1;
         struct No *aux = cabeca->primeiro;
-        move(0,80);
-        printw("No");
-        move(1,80);
+        move(4,0);
+        printw("pedidos chegando");
+        move(5,0);
         printw("------------------------------------");
         while(aux != NULL)
         {
-            move(cont,80);
-            printw("| id:%d '%s' - '%d' (segs)|\n", aux->numero_pedido,aux->prato, aux->tempo_fazer);
-            aux = aux->proximo;
-            cont++;
+            if (conta_linha >= 10)
+            {
+                move(cont,0);
+                printw("+ %d pedidos......\n", conta_linha);
+                aux = aux->proximo;
+            }
+            else{
+                move(cont,0);
+                printw("| id:%d '%s' - '%d' (segs)|\n", aux->numero_pedido,aux->prato, aux->tempo_fazer);
+                aux = aux->proximo;
+                cont++;
+            }
+            conta_linha++;
         }
-        move(cont + 1, 80);
+        move(cont + 1, 0);
         printw("------------------------------------");
     }
     else{

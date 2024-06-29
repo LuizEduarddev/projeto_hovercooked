@@ -1,9 +1,12 @@
 all: program
 
-program: main_file.o pedidos.o preparo.o pronto.o tela.o lista_encadeada_struct.o
-	gcc -o programa main_file.o pedidos.o preparo.o pronto.o tela.o lista_encadeada_struct.o -lncurses
-	rm -f main_file.o pedidos.o preparo.o pronto.o tela.o lista_encadeada_struct.o
-	gdb -ex=run -ex=bt -ex=quit ./programa
+program: main_file.o pedidos.o preparo.o pronto.o tela.o lista_encadeada_struct.o jogo.o
+	gcc -o programa main_file.o pedidos.o preparo.o pronto.o tela.o lista_encadeada_struct.o jogo.o -lncurses
+	rm -f main_file.o pedidos.o preparo.o pronto.o tela.o lista_encadeada_struct.o jogo.o
+	./programa
+
+jogo.o: jogo.c jogo.h
+	gcc -c jogo.c -o jogo.o -lncurses
 
 pedidos.o: pedidos.c pedidos.h
 	gcc -c pedidos.c -o pedidos.o -lncurses

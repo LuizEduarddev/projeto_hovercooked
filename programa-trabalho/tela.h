@@ -7,9 +7,9 @@ typedef struct tela_struct
     struct gancho *cabeca_pronto;
     struct gancho *cabeca_preparo;
     struct gancho *cabeca_pedido;
-    int bancada;
+    int bancadas_atuais;
+    int bancadas_maximas;
     int cozinheiros_atuais;
-    int cozinheiros_maximos;
 }tela_struct;
 
 void start();
