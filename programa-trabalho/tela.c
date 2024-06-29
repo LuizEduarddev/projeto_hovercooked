@@ -10,7 +10,6 @@
 #include "pedidos.h"
 #include "tela.h"
 #include "lista_encadeada_struct.h"
-#define quantidade_cozinheiro 2
 
 void start()
 {
@@ -35,6 +34,7 @@ struct tela_struct *create_variable_tela(struct gancho *cabeca_pedidos, struct g
     tela_data->cabeca_pedido = cabeca_pedidos;
     tela_data->cabeca_preparo = cabeca_preparo;
     tela_data->cabeca_pronto = cabeca_pronto;
+    tela_data->cozinheiros_maximos = 2;
     return tela_data;
 }
 
@@ -77,7 +77,7 @@ void *thread_func_tela(void* tel)
         tecla = getch();
         switch (tecla) {
             case '1':
-            cozinheiros_atuais = preparar_item(tela_data, quantidade_cozinheiro, cozinheiros_atuais);
+            cozinheiros_atuais = preparar_item(tela_data);
                 break;
             /*
             case '2':
