@@ -3,7 +3,6 @@
         "ncurses.h": "c",
         "lista_encadeada_struct.h": "c",
         "stdio.h": "c",
-        "stdlib.h": "c",
-        "jogo.h": "c"
+        "stdlib.h": "c"
     }
 }

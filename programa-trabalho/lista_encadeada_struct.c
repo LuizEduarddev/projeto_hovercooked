@@ -49,7 +49,7 @@ void adicionar_item(struct gancho *cabeca, char *prato, int tempo_fazer, char *n
 
     if (strcmp(novo->nome_struct, "pedidos") == 0)
     {
-        mostra_qntd_pedidos(cabeca);
+        printa_tela_pedidos(cabeca);
     }
 }
 

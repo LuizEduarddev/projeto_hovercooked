@@ -12,8 +12,5 @@ void *thread_bancada_func(void *varrer);
 void seta_cozinheiro_item(struct tela_struct *tela_data, int tecla);
 void *thread_ver_preparo_func(void *cabeca_preparo);
 void preparar_item(struct tela_struct *tela_data);
-void *thread_bancada_pronto_func(void *varrer);
-void seta_cozinheiro_pronto(struct tela_struct *tela_data, int tecla);
-void item_pronto(struct tela_struct *tela_data);
 
 #endif
