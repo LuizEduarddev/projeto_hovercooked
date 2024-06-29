@@ -13,7 +13,21 @@
 #include "lista_encadeada_struct.h"
 #include "jogo.h"
 
-void seta_cozinheiro_item(struct tela_struct *tela_data)
+void varre_lista(struct gancho *cabeca_pedido, int tecla)
+{
+    struct No *aux = cabeca_pedido->primeiro;
+    while (aux != NULL)
+    {
+        if (aux->numero_pedido == tecla)
+        {
+            pthread_t thread_bancada;
+            
+        }
+        aux = aux->proximo;
+    }
+}
+
+void seta_cozinheiro_item(struct tela_struct *tela_data, int tecla)
 {
     if (tela_data->cozinheiros_atuais == tela_data->cozinheiros_maximos)
     {
@@ -23,7 +37,7 @@ void seta_cozinheiro_item(struct tela_struct *tela_data)
         return;
     }
     else{
-
+        varre_lista(tela_data->cabeca_pedido, tecla);
     }
 }
 
@@ -38,9 +52,11 @@ int preparar_item(struct tela_struct *tela_data)
     {
         if (isdigit(tecla)) 
         {
-            printw("You pressed the number: %c\n", tecla);
+            move(2,0);
+            seta_cozinheiro_item(tela_data, tecla);
         } else 
         {
+            move(2,0);
             printw("Invalid key. Please press a number key.\n");
         }
     }
