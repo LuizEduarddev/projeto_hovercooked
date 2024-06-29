@@ -24,6 +24,33 @@ void thread_adicionar_prato(void* args)
     insert_prato(number, cabeca);
     return;
 }
+    
+void mostra_qntd_pedidos(struct gancho *cabeca)
+{
+    if (cabeca != NULL)
+    {
+        struct No *aux = cabeca->primeiro;
+        int cont = 1;
+        move(3,0);
+        clrtoeol();
+        while(aux != NULL)
+        {
+            printw(" --------------- ");
+            move(4,0);
+            clrtoeol();
+            printw("| %d  - pedidos. |", cont);
+            aux = aux->proximo;
+            cont++;
+        }
+        move(5, 0);
+        clrtoeol();
+        printw(" --------------- ");
+    }
+    else{
+        printw("Ocorreu um erro inesperado. Reinicie o programa e tente novamente.");
+    }
+    refresh();
+}
 
 void printa_tela_pedidos(struct gancho *cabeca)
 {

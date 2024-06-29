@@ -15,10 +15,14 @@
 void start()
 {
     pthread_t thread_gera_pedido;
+    pthread_t thread_preparo;
+    pthread_t thread_pronto;
     struct gancho *cabeca_pedidos = criar_lista_No();
     struct gancho *cabeca_pronto = criar_lista_No();
     struct gancho *cabeca_preparo = criar_lista_No();
     pthread_create(&thread_gera_pedido, NULL, gera_pedidos, (void *)cabeca_pedidos);
+    pthread_create(&thread_preparo, NULL, thread_ver_preparo_func, (void *)cabeca_preparo);
+    pthread_create(&thread_pronto, NULL, thread_ver_pronto_func, (void *)cabeca_preparo);
     gera_tela(cabeca_pedidos, cabeca_preparo, cabeca_pronto);
 }
 
@@ -74,13 +78,11 @@ void *thread_func_tela(void* tel)
         tecla = getch();
         switch (tecla) {
             case '1':
-            preparar_item(tela_data);
+                preparar_item(tela_data);
                 break;
-            /*
             case '2':
-                printw("Apertou 2");
+                item_pronto(tela_data);
                 break;
-            */
             case KEY_F(4):
                 attron(COLOR_PAIR(7));
                 move(8, 0);
