@@ -8,4 +8,5 @@ void insert_prato(int number, struct gancho *head);
 void deletar_item_pedido(struct No *no, struct gancho *cabeca);
 void printa_tela_pedidos(struct gancho *cabeca);
 void *gera_pedidos(void* cabeca);
+void mostra_qntd_pedidos(struct gancho *cabeca);
 #endif
