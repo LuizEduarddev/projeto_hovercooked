@@ -40,5 +40,5 @@ void ver_pronto_func__(struct gancho *cabeca)
         printw("Ocorreu um erro inesperado. Reinicie o programa e tente novamente.");
     }
     refresh();
-    return NULL;
+    return;
 }

@@ -103,23 +103,29 @@ void deletar_item_pedido(struct No *no, struct gancho *cabeca)
     {
         itens_pedidos_totais -= 1;
     }
+    
     struct No *aux = cabeca->primeiro;
+    
     if (aux == no)
     {
+        cabeca->primeiro = aux->proximo;
         if (aux->proximo != NULL)
         {
-            cabeca->primeiro = aux->proximo;
-            aux->proximo->anterior = cabeca->primeiro;
-            free(no);
-        }else{
-            free(no);
+            aux->proximo->anterior = NULL;
         }
+        free(no);
     }
     else if (no->proximo == NULL)
     {
+        while (aux->proximo != no)
+        {
+            aux = aux->proximo;
+        }
+        aux->proximo = NULL;
         free(no);
     }
-    else{
+    else
+    {
         while (aux->proximo != no)
         {
             aux = aux->proximo;
@@ -128,5 +134,4 @@ void deletar_item_pedido(struct No *no, struct gancho *cabeca)
         no->proximo->anterior = aux;
         free(no);
     }
-    return;
 }

@@ -70,10 +70,10 @@ void *pega_comandos(void * tel)
         tecla = getch();
         switch (tecla) {
             case '1':
-                preparar_item(tela_data->cabeca_pedido);
+                preparar_item(tela_data->cabeca_pedido, tela_data->cabeca_preparo, tela_data);
                 break;
             case '2':
-                preparar_item(tela_data->cabeca_preparo);
+                preparar_item(tela_data->cabeca_preparo, tela_data->cabeca_pronto, tela_data);
                 break;
             case KEY_F(4):
             case 'q':
@@ -86,36 +86,14 @@ void *pega_comandos(void * tel)
     return NULL;
 }
 
-/*
-
-void *thread_timer_function(void *null)
-{
-    sleep(10);
-    pthread_mutex_lock(&tela_mutex);
-    clear();
-    move(0,0);
-    printw("qué qué quéééééémmm, voce perdeu, loser!");
-    sleep(5);
-    encerra_jogo();
-    pthread_mutex_unlock(&tela_mutex);
-}
-
-*/
-
 void *thread_func_tela(void* tel)
 {
     struct tela_struct *tela_data = (struct tela_struct *)tel;
-
-    /*
-    pthread_t thread_timer;
-    pthread_create(&thread_timer, NULL, thread_timer_function, NULL);
-    */
     initscr();
     start_color();
     raw();
     noecho();
     keypad(stdscr, TRUE);
-
     init_pair(7, COLOR_BLACK, COLOR_WHITE);
     init_pair(1, COLOR_BLUE, COLOR_WHITE);
     init_pair(2, COLOR_GREEN, COLOR_BLACK);
@@ -137,6 +115,10 @@ void *thread_func_tela(void* tel)
         clear();
         move(0, 0);
         printw("1 - Preparar ingredientes | 2 - Preparar Pedido | F4 ou Q para encerrar o programa.");
+        move(1,0);
+        printw("'%d' bancadas em uso", tela_data->bancadas_atuais);
+        move(2,0);
+        printw("'%d' cozinheiros trabalhando", tela_data->cozinheiros_atuais);
         printa_tela_pedidos(tela_data->cabeca_pedido);
         ver_preparo_func__(tela_data->cabeca_preparo);
         ver_pronto_func__(tela_data->cabeca_pronto);
