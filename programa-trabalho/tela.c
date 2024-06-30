@@ -70,10 +70,10 @@ void *pega_comandos(void * tel)
         tecla = getch();
         switch (tecla) {
             case '1':
-                preparar_item(tela_data);
+                preparar_item(tela_data->cabeca_pedido);
                 break;
             case '2':
-                item_pronto(tela_data);
+                preparar_item(tela_data->cabeca_preparo);
                 break;
             case KEY_F(4):
             case 'q':

@@ -29,7 +29,7 @@ void *thread_bancada_func(void *varrer)
 {
     int cont = 0;
     struct struct_varrimento *varrimento = (struct struct_varrimento *) varrer;
-    struct No *pedidos = varrimento->tela->cabeca_pedido->primeiro;
+    struct No *pedidos = varrimento->cabeca->primeiro;
     while (pedidos != NULL)
     {
         if (pedidos->numero_pedido == varrimento->tecla)
@@ -48,7 +48,7 @@ void *thread_bancada_func(void *varrer)
     */
 }
 
-void seta_cozinheiro_item(struct tela_struct *tela_data, int tecla)
+void seta_cozinheiro_item(struct gancho *cabeca, int tecla)
 {
     /*
     if (tela_data->cozinheiros_atuais == tela_data->bancadas_maximas)
@@ -67,7 +67,7 @@ void seta_cozinheiro_item(struct tela_struct *tela_data, int tecla)
     varrimento = (struct struct_varrimento *)malloc(sizeof(struct struct_varrimento));
     if (varrimento != NULL)
     {
-        varrimento->tela = tela_data;
+        varrimento->cabeca = cabeca;
         varrimento->tecla = tecla;
         pthread_create(&thread_bancada, NULL, thread_bancada_func, (void *)varrimento);
     }
@@ -80,7 +80,7 @@ void seta_cozinheiro_item(struct tela_struct *tela_data, int tecla)
     */
 }
 
-void preparar_item(struct tela_struct *tela_data)
+void preparar_item(struct gancho *cabeca)
 {   
     int tecla;
 
@@ -92,7 +92,7 @@ void preparar_item(struct tela_struct *tela_data)
     tecla = tecla - '0';
     if (tecla >= 1 && tecla <= 9)
     {
-        seta_cozinheiro_item(tela_data, tecla);
+        seta_cozinheiro_item(cabeca, tecla);
     }
     else {
         move(2, 0);
@@ -107,7 +107,7 @@ void *thread_bancada_pronto_func(void *varrer)
 {
     int cont = 0;
     struct struct_varrimento *varrimento = (struct struct_varrimento *) varrer;
-    struct No *pedidos = varrimento->tela->cabeca_pronto->primeiro;
+    struct No *pedidos = varrimento->tela->cabeca_preparo->primeiro;
     while (pedidos != NULL)
     {
         if (pedidos->numero_pedido == varrimento->tecla)
@@ -160,26 +160,4 @@ void seta_cozinheiro_pronto(struct tela_struct *tela_data, int tecla)
         */
 }
 
-void item_pronto(struct tela_struct *tela_data)
-{
-    int tecla;
-
-    pthread_mutex_lock(&tela_mutex);
-    move(0, 0);
-    clrtoeol();
-    printw("----- Selecione um id de pedido para adicionar a bancada. ------");
-    tecla = getch();
-    tecla = tecla - '0';
-    if (tecla >= 1 && tecla <= 9)
-    {
-        seta_cozinheiro_pronto(tela_data, tecla);
-    }
-    else {
-        move(2, 0);
-        clrtoeol(); 
-        printw("tecla invalida");
-    }
-    pthread_mutex_unlock(&tela_mutex);
-    clear();
-}
 

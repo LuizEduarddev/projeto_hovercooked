@@ -3,7 +3,7 @@
 
 typedef struct struct_varrimento
 {
-    struct tela_struct *tela;
+    struct gancho *cabeca;
     int tecla;
 }struct_varrimento;
 
