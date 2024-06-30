@@ -12,6 +12,10 @@
 #include "lista_encadeada_struct.h"
 #include "jogo.h"
 
+pthread_mutex_t tela_mutex = PTHREAD_MUTEX_INITIALIZER;
+volatile int jogo_ativo = 1;  // Variável global para controlar o estado do jogo
+int ganhou = 0;
+
 void start()
 {
     pthread_t thread_gera_pedido;
@@ -19,7 +23,6 @@ void start()
     struct gancho *cabeca_pronto = criar_lista_No();
     struct gancho *cabeca_preparo = criar_lista_No();
     pthread_create(&thread_gera_pedido, NULL, gera_pedidos, (void *)cabeca_pedidos);
-    
     gera_tela(cabeca_pedidos, cabeca_preparo, cabeca_pronto);
 }
 
@@ -48,51 +51,22 @@ void gera_tela(struct gancho *cabeca_pedidos, struct gancho *cabeca_preparo, str
     pthread_join(thread_tela, NULL);
 }
 
-void *thread_tela_infinita(void* tel)
+void encerra_jogo()
 {
-    struct tela_struct *tela_data = (struct tela_struct *) tel;
-    pthread_t thread_preparo;
-    pthread_t thread_pronto;
-    while(1)
-    {
-        pthread_create(&thread_preparo, NULL, thread_ver_preparo_func, (void *)tela_data->cabeca_preparo);
-        pthread_join(thread_preparo, NULL);
-        pthread_create(&thread_pronto, NULL, thread_ver_pronto_func, (void *)tela_data->cabeca_preparo);
-        pthread_join(thread_pronto, NULL);
-    }
+    jogo_ativo = 0;  // Define a variável global para indicar que o jogo deve ser encerrado
 }
 
-void inicia_thread_mostra_tela(struct tela_struct *tela_data)
+void gera_tela_comandos(struct tela_struct *tela_data)
 {
-    pthread_t gera_tela;
-    pthread_create(&gera_tela, NULL, thread_tela_infinita, (void *)tela_data);
+    pthread_t thread_comandos;
+    pthread_create(&thread_comandos, NULL, pega_comandos, (void *)tela_data);
 }
 
-void *thread_func_tela(void* tel)
+void *pega_comandos(void * tel)
 {
     struct tela_struct *tela_data = (struct tela_struct *)tel;
-    inicia_thread_mostra_tela(tela_data);
     int tecla;
-    initscr(); // Inicializa a tela (posição atual é (0, 0))
-    start_color();
-    raw();    // Não precisa esperar uma quebra de linha
-    noecho(); // O que for digitado não aparece na tela
-    keypad(stdscr, TRUE); // Teclas especiais como F1, F2, etc..
-
-    // Cria as cores que serão utilizadas (mas ainda não usa)
-    init_pair(7, COLOR_BLACK, COLOR_WHITE); // padrão
-    init_pair(1, COLOR_BLUE, COLOR_WHITE);
-    init_pair(2, COLOR_GREEN, COLOR_BLACK);
-    init_pair(5, COLOR_RED, COLOR_BLACK);
-
-    move(0,30);
-    printw("Iniciando...");
-    refresh(); // Realiza todos os comandos pendentes atualizando na tela
-    sleep(1);
-
     do {
-        move(0, 30);
-        printw(" - Digite 1 - Preparar Item | 2, q ou F4: \n");
         tecla = getch();
         switch (tecla) {
             case '1':
@@ -102,26 +76,82 @@ void *thread_func_tela(void* tel)
                 item_pronto(tela_data);
                 break;
             case KEY_F(4):
-                attron(COLOR_PAIR(7));
-                move(8, 0);
-                printw("Tecla F4 foi pressionada.. saindo");
-                refresh();
-                sleep(1);
             case 'q':
+                encerra_jogo();
+                break;
             default:
                 break;
         }
-    } while (tecla != 'q' && tecla != KEY_F(4));
+    } while (jogo_ativo);
+    return NULL;
+}
 
-    // Desabilitando tudo que foi habilitado antes de sair, para não deixar o
-    // terminal em estado diferente do anterior à execução
+/*
+
+void *thread_timer_function(void *null)
+{
+    sleep(10);
+    pthread_mutex_lock(&tela_mutex);
+    clear();
+    move(0,0);
+    printw("qué qué quéééééémmm, voce perdeu, loser!");
+    sleep(5);
+    encerra_jogo();
+    pthread_mutex_unlock(&tela_mutex);
+}
+
+*/
+
+void *thread_func_tela(void* tel)
+{
+    struct tela_struct *tela_data = (struct tela_struct *)tel;
+
+    /*
+    pthread_t thread_timer;
+    pthread_create(&thread_timer, NULL, thread_timer_function, NULL);
+    */
+    initscr();
+    start_color();
+    raw();
+    noecho();
+    keypad(stdscr, TRUE);
+
+    init_pair(7, COLOR_BLACK, COLOR_WHITE);
+    init_pair(1, COLOR_BLUE, COLOR_WHITE);
+    init_pair(2, COLOR_GREEN, COLOR_BLACK);
+    init_pair(5, COLOR_RED, COLOR_BLACK);
+
+    pthread_mutex_lock(&tela_mutex);
+    move(0, 0);
+    printw("Iniciando...");
+    refresh();
+    sleep(1);
+
+    move(0, 0);
+    printw("1 - Preparar ingredientes | 2 - Preparar Pedido | F4 ou Q para encerrar o programa.");
+    pthread_mutex_unlock(&tela_mutex);
+
+    gera_tela_comandos(tela_data);
+    while (jogo_ativo) {
+        pthread_mutex_lock(&tela_mutex);
+        clear();
+        move(0, 0);
+        printw("1 - Preparar ingredientes | 2 - Preparar Pedido | F4 ou Q para encerrar o programa.");
+        printa_tela_pedidos(tela_data->cabeca_pedido);
+        ver_preparo_func__(tela_data->cabeca_preparo);
+        ver_pronto_func__(tela_data->cabeca_pronto);
+        pthread_mutex_unlock(&tela_mutex);
+        sleep(1);
+    }
+
+    pthread_mutex_lock(&tela_mutex);
     keypad(stdscr, FALSE);
     noraw();
     echo();
-
     endwin();
+    pthread_mutex_unlock(&tela_mutex);
 
     printw("Termino da execucao\n");
 
-    return 0;
+    return NULL;
 }

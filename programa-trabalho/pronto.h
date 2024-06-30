@@ -1,6 +1,8 @@
 #ifndef PRONTO_H
 #define PRONTO_H
 
-void *thread_ver_pronto_func(void *cabeca_preparo)
-void *thread_ver_pronto_func__(void *cabeca_preparo);
+#include "lista_encadeada_struct.h"
+
+void ver_pronto_func__(struct gancho *cabeca);
+
 #endif

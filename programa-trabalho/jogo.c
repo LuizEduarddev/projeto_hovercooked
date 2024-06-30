@@ -39,15 +39,18 @@ void *thread_bancada_func(void *varrer)
         }
         pedidos = pedidos->proximo;
     }
+    /*
     if (cont == 0)
     {
         move(3,0);
         printw("Id de pedido nao encontrado.\n");
     }
+    */
 }
 
 void seta_cozinheiro_item(struct tela_struct *tela_data, int tecla)
 {
+    /*
     if (tela_data->cozinheiros_atuais == tela_data->bancadas_maximas)
     {
         move(2,0);
@@ -57,28 +60,33 @@ void seta_cozinheiro_item(struct tela_struct *tela_data, int tecla)
         return;
     }
     else{
-        pthread_t thread_bancada;
-        struct struct_varrimento *varrimento;
-        varrimento = (struct struct_varrimento *)malloc(sizeof(struct struct_varrimento));
-        if (varrimento != NULL)
-        {
-            varrimento->tela = tela_data;
-            varrimento->tecla = tecla;
-            pthread_create(&thread_bancada, NULL, thread_bancada_func, (void *)varrimento);
-        }
-        else{
-            move(3,0);
-            printw("Ocorreu um erro durante a instanciacao de 'varrimento'.\n");
-            return;
-        }
     }
+    */
+    pthread_t thread_bancada;
+    struct struct_varrimento *varrimento;
+    varrimento = (struct struct_varrimento *)malloc(sizeof(struct struct_varrimento));
+    if (varrimento != NULL)
+    {
+        varrimento->tela = tela_data;
+        varrimento->tecla = tecla;
+        pthread_create(&thread_bancada, NULL, thread_bancada_func, (void *)varrimento);
+    }
+    /*
+    else{
+        move(3,0);
+        printw("Ocorreu um erro durante a instanciacao de 'varrimento'.\n");
+        return;
+    }
+    */
 }
 
 void preparar_item(struct tela_struct *tela_data)
 {   
     int tecla;
-    clear();
-    move(0, 30);
+
+    pthread_mutex_lock(&tela_mutex);
+    move(0, 0);
+    clrtoeol();
     printw("----- Selecione um id de pedido para adicionar a bancada. ------");
     tecla = getch();
     tecla = tecla - '0';
@@ -86,11 +94,13 @@ void preparar_item(struct tela_struct *tela_data)
     {
         seta_cozinheiro_item(tela_data, tecla);
     }
-    else{
-        move(2,0);
+    else {
+        move(2, 0);
         clrtoeol(); 
-        printw("pressione uma tecla entre 1 e 9 para escolher o id de um pedido");
+        printw("tecla invalida");
     }
+    pthread_mutex_unlock(&tela_mutex);
+    clear();
 }
 
 void *thread_bancada_pronto_func(void *varrer)
@@ -112,41 +122,51 @@ void *thread_bancada_pronto_func(void *varrer)
         move(3,0);
         printw("Id de pedido nao encontrado.\n");
     }
+    clear();
 }
 
 void seta_cozinheiro_pronto(struct tela_struct *tela_data, int tecla)
 {
+    /*
     if (tela_data->cozinheiros_atuais == tela_data->bancadas_maximas)
     {
         move(2,0);
         clrtoeol();
         printw("Todos os '%d' cozinheiros estao ocupados. Bancadas restantes '0'.", tela_data->cozinheiros_atuais);
         sleep(2);
+        clear();
         return;
     }
+    
     else{
-        pthread_t thread_bancada_pronto;
-        struct struct_varrimento *varrimento;
-        varrimento = (struct struct_varrimento *)malloc(sizeof(struct struct_varrimento));
-        if (varrimento != NULL)
-        {
-            varrimento->tela = tela_data;
-            varrimento->tecla = tecla;
-            pthread_create(&thread_bancada_pronto, NULL, thread_bancada_pronto_func, (void *)varrimento);
-        }
+    }
+    */
+    pthread_t thread_bancada_pronto;
+    struct struct_varrimento *varrimento;
+    varrimento = (struct struct_varrimento *)malloc(sizeof(struct struct_varrimento));
+    if (varrimento != NULL)
+    {
+        varrimento->tela = tela_data;
+        varrimento->tecla = tecla;
+        pthread_create(&thread_bancada_pronto, NULL, thread_bancada_pronto_func, (void *)varrimento);
+    }
+        /*
         else{
             move(3,0);
             printw("Ocorreu um erro durante a instanciacao de 'varrimento'.\n");
+            clear();
             return;
         }
-    }
+        */
 }
 
 void item_pronto(struct tela_struct *tela_data)
-{   
+{
     int tecla;
-    clear();
-    move(0, 30);
+
+    pthread_mutex_lock(&tela_mutex);
+    move(0, 0);
+    clrtoeol();
     printw("----- Selecione um id de pedido para adicionar a bancada. ------");
     tecla = getch();
     tecla = tecla - '0';
@@ -154,9 +174,12 @@ void item_pronto(struct tela_struct *tela_data)
     {
         seta_cozinheiro_pronto(tela_data, tecla);
     }
-    else{
-        move(2,0);
+    else {
+        move(2, 0);
         clrtoeol(); 
-        printw("pressione uma tecla entre 1 e 9 para escolher o id de um pedido");
+        printw("tecla invalida");
     }
+    pthread_mutex_unlock(&tela_mutex);
+    clear();
 }
+
