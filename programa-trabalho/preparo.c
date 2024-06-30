@@ -14,25 +14,22 @@ void *thread_ver_preparo_func(void *cabeca_preparo)
     struct gancho *cabeca = (struct gancho *)cabeca_preparo;
     if (cabeca != NULL)
     {
-        while (1)
+        struct No *aux = cabeca->primeiro;
+        int cont = 1;
+        move(6,0);
+        clrtoeol();
+        while(aux != NULL)
         {
-            struct No *aux = cabeca->primeiro;
-            int cont = 1;
-            move(6,0);
-            clrtoeol();
-            while(aux != NULL)
-            {
-                printw(" --------------- ");
-                move(7,0);
-                clrtoeol();
-                printw("| %d  - pedidos. |", cont);
-                aux = aux->proximo;
-                cont++;
-            }
-            move(8, 0);
-            clrtoeol();
             printw(" --------------- ");
+            move(7,0);
+            clrtoeol();
+            printw("| %d  - pedidos. |", cont);
+            aux = aux->proximo;
+            cont++;
         }
+        move(8, 0);
+        clrtoeol();
+        printw(" --------------- ");
     }
     else{
         printw("Ocorreu um erro inesperado. Reinicie o programa e tente novamente.");

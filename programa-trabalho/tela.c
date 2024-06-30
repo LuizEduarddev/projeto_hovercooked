@@ -15,14 +15,11 @@
 void start()
 {
     pthread_t thread_gera_pedido;
-    pthread_t thread_preparo;
-    pthread_t thread_pronto;
     struct gancho *cabeca_pedidos = criar_lista_No();
     struct gancho *cabeca_pronto = criar_lista_No();
     struct gancho *cabeca_preparo = criar_lista_No();
     pthread_create(&thread_gera_pedido, NULL, gera_pedidos, (void *)cabeca_pedidos);
-    pthread_create(&thread_preparo, NULL, thread_ver_preparo_func, (void *)cabeca_preparo);
-    pthread_create(&thread_pronto, NULL, thread_ver_pronto_func, (void *)cabeca_preparo);
+    
     gera_tela(cabeca_pedidos, cabeca_preparo, cabeca_pronto);
 }
 
@@ -51,9 +48,30 @@ void gera_tela(struct gancho *cabeca_pedidos, struct gancho *cabeca_preparo, str
     pthread_join(thread_tela, NULL);
 }
 
+void *thread_tela_infinita(void* tel)
+{
+    struct tela_struct *tela_data = (struct tela_struct *) tel;
+    pthread_t thread_preparo;
+    pthread_t thread_pronto;
+    while(1)
+    {
+        pthread_create(&thread_preparo, NULL, thread_ver_preparo_func, (void *)tela_data->cabeca_preparo);
+        pthread_join(thread_preparo, NULL);
+        pthread_create(&thread_pronto, NULL, thread_ver_pronto_func, (void *)tela_data->cabeca_preparo);
+        pthread_join(thread_pronto, NULL);
+    }
+}
+
+void inicia_thread_mostra_tela(struct tela_struct *tela_data)
+{
+    pthread_t gera_tela;
+    pthread_create(&gera_tela, NULL, thread_tela_infinita, (void *)tela_data);
+}
+
 void *thread_func_tela(void* tel)
 {
     struct tela_struct *tela_data = (struct tela_struct *)tel;
+    inicia_thread_mostra_tela(tela_data);
     int tecla;
     initscr(); // Inicializa a tela (posição atual é (0, 0))
     start_color();
