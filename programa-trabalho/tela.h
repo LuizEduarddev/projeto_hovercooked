@@ -1,24 +1,34 @@
-#ifndef TELA_H
-#define TELA_H
-#define NOME_PRATO 100
+#ifndef JOGO_H
+#define JOGO_H
 
+#include <pthread.h>
+#include <stdbool.h>
+#include <time.h>
+
+#define GAME_DURATION 60
+
+extern bool game_over;
+extern bool game_won;
+extern time_t start_time, current_time;
 extern pthread_mutex_t tela_mutex;
+extern volatile int jogo_ativo;
 
-typedef struct tela_struct
-{
-    struct gancho *cabeca_pronto;
-    struct gancho *cabeca_preparo;
+struct tela_struct {
     struct gancho *cabeca_pedido;
-    int bancadas_atuais;
+    struct gancho *cabeca_preparo;
+    struct gancho *cabeca_pronto;
     int bancadas_maximas;
+    int bancadas_atuais;
     int cozinheiros_atuais;
-}tela_struct;
+};
 
 void start();
-void gera_tela(struct gancho *cabeca_pedidos, struct gancho *cabeca_preparo, struct gancho *cabeca_pronto);
-void gera_tela_comandos(struct tela_struct *tela_data);
-void *thread_func_tela(void* tela_data);
 struct tela_struct *create_variable_tela(struct gancho *cabeca_pedidos, struct gancho *cabeca_preparo, struct gancho *cabeca_pronto);
-void *pega_comandos(void * tel);
-void *thread_timer_function(void *null);
-#endif
+void gera_tela(struct gancho *cabeca_pedidos, struct gancho *cabeca_preparo, struct gancho *cabeca_pronto);
+void encerra_jogo();
+void gera_tela_comandos(struct tela_struct *tela_data);
+
+void *pega_comandos(void *tel);
+void *thread_func_tela(void *tel);
+
+#endif // JOGO_H

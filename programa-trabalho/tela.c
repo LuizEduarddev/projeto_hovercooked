@@ -12,9 +12,14 @@
 #include "lista_encadeada_struct.h"
 #include "jogo.h"
 
+#define GAME_DURATION 60 
+
+bool game_over = false;
+bool game_won = false;
+time_t start_time, current_time;
+
 pthread_mutex_t tela_mutex = PTHREAD_MUTEX_INITIALIZER;
-volatile int jogo_ativo = 1;  // Variável global para controlar o estado do jogo
-int ganhou = 0;
+volatile int jogo_ativo = 1; 
 
 void start()
 {
@@ -53,7 +58,7 @@ void gera_tela(struct gancho *cabeca_pedidos, struct gancho *cabeca_preparo, str
 
 void encerra_jogo()
 {
-    jogo_ativo = 0;  // Define a variável global para indicar que o jogo deve ser encerrado
+    jogo_ativo = 0; 
 }
 
 void gera_tela_comandos(struct tela_struct *tela_data)
@@ -99,6 +104,8 @@ void *thread_func_tela(void* tel)
     init_pair(2, COLOR_GREEN, COLOR_BLACK);
     init_pair(5, COLOR_RED, COLOR_BLACK);
 
+    start_time = time(NULL);
+
     pthread_mutex_lock(&tela_mutex);
     move(0, 0);
     printw("Iniciando...");
@@ -115,18 +122,41 @@ void *thread_func_tela(void* tel)
         clear();
         move(0, 0);
         printw("1 - Preparar ingredientes | 2 - Preparar Pedido | F4 ou Q para encerrar o programa.");
-        move(1,0);
+        move(1, 0);
         printw("'%d' bancadas em uso", tela_data->bancadas_atuais);
-        move(2,0);
+        move(2, 0);
         printw("'%d' cozinheiros trabalhando", tela_data->cozinheiros_atuais);
         printa_tela_pedidos(tela_data->cabeca_pedido);
         ver_preparo_func__(tela_data->cabeca_preparo);
         ver_pronto_func__(tela_data->cabeca_pronto);
+
+        current_time = time(NULL);
+        int elapsed_time = difftime(current_time, start_time);
+        mvprintw(LINES-1, 0, "Tempo: %d s", elapsed_time);
+        refresh();
+
+        if (elapsed_time > GAME_DURATION) {
+            jogo_ativo = false;
+            game_won = false;
+        } else if (tela_data->cabeca_pedido == NULL && tela_data->cabeca_preparo == NULL) {
+            jogo_ativo = false;
+            game_won = true;
+        }
+
         pthread_mutex_unlock(&tela_mutex);
         sleep(1);
     }
 
     pthread_mutex_lock(&tela_mutex);
+    clear();
+    if (game_won) {
+        mvprintw(LINES / 2, COLS / 2 - 5, "VOCE GANHOU!");
+    } else {
+        mvprintw(LINES / 2, COLS / 2 - 5, "VOCE PERDEU!");
+    }
+    refresh();
+    sleep(5); 
+
     keypad(stdscr, FALSE);
     noraw();
     echo();

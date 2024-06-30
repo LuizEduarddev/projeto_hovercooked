@@ -13,7 +13,7 @@ void *gera_pedidos(void* cabeca)
     while (1)
     {
         thread_adicionar_prato(cabeca);
-        sleep(1);
+        sleep(3);
     }
 }
 
